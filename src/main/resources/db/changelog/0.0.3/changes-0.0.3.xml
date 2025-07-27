@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="3" author="booking-system">
+        <comment>Change hotel_owner.id from BIGINT to UUID and update related foreign keys</comment>
+        
+        <!-- Drop existing foreign key constraints first -->
+        <dropForeignKeyConstraint baseTableName="hotel" constraintName="fk_hotel_owner"/>
+        <dropForeignKeyConstraint baseTableName="booking" constraintName="fk_booking_updated_by"/>
+        
+        <!-- Change hotel_owner.id to UUID -->
+        <modifyDataType 
+            tableName="hotel_owner" 
+            columnName="id" 
+            newDataType="UUID"/>
+        
+        <!-- Change hotel.owner_id to UUID -->
+        <modifyDataType 
+            tableName="hotel" 
+            columnName="owner_id" 
+            newDataType="UUID"/>
+        
+        <!-- Recreate foreign key constraints -->
+        <addForeignKeyConstraint 
+            baseTableName="hotel" 
+            baseColumnNames="owner_id"
+            constraintName="fk_hotel_owner"
+            referencedTableName="hotel_owner"
+            referencedColumnNames="id"/>
+            
+        <addForeignKeyConstraint 
+            baseTableName="booking" 
+            baseColumnNames="updated_by"
+            constraintName="fk_booking_updated_by"
+            referencedTableName="hotel_owner"
+            referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -5,7 +5,9 @@ import com.github.lukashindy.booking.model.Hotel;
 import com.github.lukashindy.booking.model.HotelOwner;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
+import java.util.UUID;
 
 @Mapper(componentModel = "spring")
 public interface HotelMapper {
@@ -24,10 +26,11 @@ public interface HotelMapper {
     @Mapping(source = "country", target = "country")
     @Mapping(source = "city", target = "city")
     @Mapping(source = "street", target = "street")
-    @Mapping(source = "ownerId", target = "owner")
+    @Mapping(source = "ownerId", target = "owner", qualifiedByName = "mapOwner")
     Hotel toEntity(HotelDto dto);
 
-    default HotelOwner map(Long ownerId) {
+    @Named("mapOwner")
+    default HotelOwner mapOwner(UUID ownerId) {
         if (ownerId == null) return null;
         HotelOwner owner = new HotelOwner();
         owner.setId(ownerId);

@@ -7,6 +7,8 @@ import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class HotelOwnerMapperTest {
@@ -20,7 +22,7 @@ class HotelOwnerMapperTest {
         
         // Given
         HotelOwner hotelOwner = new HotelOwner();
-        hotelOwner.setId(1L);
+        hotelOwner.setId(UUID.randomUUID());
         hotelOwner.setName("John Smith");
         hotelOwner.setEmail("john.smith@example.com");
         hotelOwner.setPasswordHash("hashedPassword123");
@@ -46,7 +48,7 @@ class HotelOwnerMapperTest {
         
         // Given
         HotelOwnerDto dto = new HotelOwnerDto();
-        dto.setId(1L);
+        dto.setId(UUID.randomUUID());
         dto.setName("John Smith");
         dto.setEmail("john.smith@example.com");
         dto.setPasswordHash("hashedPassword123");
@@ -72,7 +74,7 @@ class HotelOwnerMapperTest {
         
         // Given
         HotelOwner hotelOwner = new HotelOwner();
-        hotelOwner.setId(1L);
+        hotelOwner.setId(UUID.randomUUID());
         hotelOwner.setName("John Smith");
         // Оставляем другие поля null
 
@@ -96,7 +98,7 @@ class HotelOwnerMapperTest {
         
         // Given
         HotelOwnerDto dto = new HotelOwnerDto();
-        dto.setId(1L);
+        dto.setId(UUID.randomUUID());
         dto.setName("John Smith");
         // Оставляем другие поля null
 

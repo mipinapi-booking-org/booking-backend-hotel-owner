@@ -1,12 +1,15 @@
 package com.github.lukashindy.booking.mapper;
 
-import com.github.lukashindy.booking.dto.HotelDto;
-import com.github.lukashindy.booking.model.Hotel;
-import com.github.lukashindy.booking.model.HotelOwner;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.github.lukashindy.booking.dto.HotelDto;
+import com.github.lukashindy.booking.mapper.HotelMapper;
+import com.github.lukashindy.booking.model.Hotel;
+import com.github.lukashindy.booking.model.HotelOwner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,7 +24,7 @@ class HotelMapperTest {
         
         // Given
         HotelOwner owner = new HotelOwner();
-        owner.setId(1L);
+        owner.setId(UUID.randomUUID());
 
         Hotel hotel = new Hotel();
         hotel.setId(10L);
@@ -57,7 +60,7 @@ class HotelMapperTest {
         dto.setCountry("USA");
         dto.setCity("New York");
         dto.setStreet("Broadway 123");
-        dto.setOwnerId(1L);
+        dto.setOwnerId(UUID.randomUUID());
 
         // When
         Hotel hotel = mapper.toEntity(dto);
@@ -79,10 +82,10 @@ class HotelMapperTest {
         logger.info("Starting testMapOwnerId test");
         
         // Given
-        Long ownerId = 5L;
+        UUID ownerId = UUID.randomUUID();
 
         // When
-        HotelOwner owner = mapper.map(ownerId);
+        HotelOwner owner = mapper.mapOwner(ownerId);
 
         // Then
         assertNotNull(owner);
@@ -96,10 +99,10 @@ class HotelMapperTest {
         logger.info("Starting testMapOwnerIdNull test");
         
         // Given
-        Long ownerId = null;
+        UUID ownerId = null;
 
         // When
-        HotelOwner owner = mapper.map(ownerId);
+        HotelOwner owner = mapper.mapOwner(ownerId);
 
         // Then
         assertNull(owner);

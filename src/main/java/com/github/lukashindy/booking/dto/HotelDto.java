@@ -1,6 +1,7 @@
 package com.github.lukashindy.booking.dto;
 
 import lombok.Data;
+import java.util.UUID;
 
 @Data
 public class HotelDto {
@@ -9,5 +10,5 @@ public class HotelDto {
     private String country;
     private String city;
     private String street;
-    private Long ownerId;
+    private UUID ownerId;
 }

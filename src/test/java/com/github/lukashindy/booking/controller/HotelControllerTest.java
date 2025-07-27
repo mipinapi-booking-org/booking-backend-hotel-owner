@@ -1,5 +1,6 @@
 package com.github.lukashindy.booking.controller;
 
+import java.util.UUID;
 import com.github.lukashindy.booking.dto.HotelDto;
 import com.github.lukashindy.booking.exception.ResourceNotFoundException;
 import com.github.lukashindy.booking.mapper.HotelMapper;
@@ -49,7 +50,7 @@ class HotelControllerTest {
         
         // Создаем тестового владельца отеля
         testOwner = new HotelOwner();
-        testOwner.setId(1L);
+        testOwner.setId(UUID.randomUUID());
         testOwner.setName("John Smith");
         testOwner.setEmail("admin@grandhotel.com");
         testOwner.setRole("ADMIN");
@@ -70,7 +71,7 @@ class HotelControllerTest {
         testHotelDto.setCountry("Maldives");
         testHotelDto.setCity("Male");
         testHotelDto.setStreet("Paradise Island Resort");
-        testHotelDto.setOwnerId(1L);
+        testHotelDto.setOwnerId(testOwner.getId());
         
         logger.info("Test data setup completed");
     }

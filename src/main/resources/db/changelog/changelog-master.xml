@@ -7,5 +7,7 @@
 
     <!-- Сюда подключаются все версии миграций -->
     <include file="0.0.1/changes-0.0.1.xml" relativeToChangelogFile="true"/>
+    <include file="0.0.2/changes-0.0.2.xml" relativeToChangelogFile="true"/>
+    <include file="0.0.3/changes-0.0.3.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

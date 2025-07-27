@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="2" author="booking-system">
+        <comment>Update booking table: add updatedBy and lastUpdatedDate fields, change checkInDate and checkOutDate to TIMESTAMP</comment>
+        
+        <!-- Add updated_by column with foreign key to hotel_owner -->
+        <addColumn tableName="booking">
+            <column name="updated_by" type="UUID">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        
+        <!-- Add foreign key constraint for updated_by -->
+        <addForeignKeyConstraint 
+            baseTableName="booking" 
+            baseColumnNames="updated_by"
+            constraintName="fk_booking_updated_by"
+            referencedTableName="hotel_owner"
+            referencedColumnNames="id"/>
+        
+        <!-- Add last_updated_date column -->
+        <addColumn tableName="booking">
+            <column name="last_updated_date" type="TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        
+        <!-- Modify checkInDate column type from DATE to TIMESTAMP -->
+        <modifyDataType 
+            tableName="booking" 
+            columnName="check_in_date" 
+            newDataType="TIMESTAMP"/>
+        
+        <!-- Modify checkOutDate column type from DATE to TIMESTAMP -->
+        <modifyDataType 
+            tableName="booking" 
+            columnName="check_out_date" 
+            newDataType="TIMESTAMP"/>
+    </changeSet>
+
+</databaseChangeLog>

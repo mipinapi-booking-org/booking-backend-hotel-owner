@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -55,7 +56,7 @@ class DataLoaderTest {
         
         // Создаем mock объекты
         mockHotelOwner = new HotelOwner();
-        mockHotelOwner.setId(1L);
+        mockHotelOwner.setId(UUID.randomUUID());
         mockHotelOwner.setName("John Smith");
         mockHotelOwner.setEmail("admin@grandhotel.com");
         mockHotelOwner.setRole("ADMIN");

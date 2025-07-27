@@ -8,7 +8,7 @@ import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,8 +30,8 @@ class BookingMapperTest {
         booking.setId(10L);
         booking.setRoom(room);
         booking.setClientId(UUID.randomUUID());
-        booking.setCheckInDate(LocalDate.of(2025, 8, 1));
-        booking.setCheckOutDate(LocalDate.of(2025, 8, 5));
+        booking.setCheckInDate(LocalDateTime.of(2025, 8, 1, 14, 0));
+        booking.setCheckOutDate(LocalDateTime.of(2025, 8, 5, 12, 0));
         booking.setGuestFullNames("John Doe, Jane Doe");
         booking.setSpecialRequests("Late check-in");
         booking.setStatus(Booking.Status.CONFIRMED);
@@ -62,8 +62,8 @@ class BookingMapperTest {
         dto.setId(10L);
         dto.setRoomId(1L);
         dto.setClientId(UUID.randomUUID());
-        dto.setCheckInDate(LocalDate.of(2025, 8, 1));
-        dto.setCheckOutDate(LocalDate.of(2025, 8, 5));
+        dto.setCheckInDate(LocalDateTime.of(2025, 8, 1, 14, 0));
+        dto.setCheckOutDate(LocalDateTime.of(2025, 8, 5, 12, 0));
         dto.setGuestFullNames("John Doe, Jane Doe");
         dto.setSpecialRequests("Late check-in");
         dto.setStatus("CONFIRMED");
