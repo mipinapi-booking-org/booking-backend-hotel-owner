@@ -35,6 +35,7 @@ class BookingMapperTest {
         booking.setGuestFullNames("John Doe, Jane Doe");
         booking.setSpecialRequests("Late check-in");
         booking.setStatus(Booking.Status.CONFIRMED);
+        booking.setRefuseReason(null);
 
         // When
         BookingDto dto = mapper.toDto(booking);
@@ -49,6 +50,7 @@ class BookingMapperTest {
         assertEquals(booking.getGuestFullNames(), dto.getGuestFullNames());
         assertEquals(booking.getSpecialRequests(), dto.getSpecialRequests());
         assertEquals(booking.getStatus().name(), dto.getStatus());
+        assertEquals(booking.getRefuseReason(), dto.getRefuseReason());
         
         logger.info("Completed testToDto test successfully");
     }
@@ -67,6 +69,7 @@ class BookingMapperTest {
         dto.setGuestFullNames("John Doe, Jane Doe");
         dto.setSpecialRequests("Late check-in");
         dto.setStatus("CONFIRMED");
+        dto.setRefuseReason("Fully booked");
 
         // When
         Booking entity = mapper.toEntity(dto);
@@ -80,6 +83,7 @@ class BookingMapperTest {
         assertEquals(dto.getGuestFullNames(), entity.getGuestFullNames());
         assertEquals(dto.getSpecialRequests(), entity.getSpecialRequests());
         assertEquals(Booking.Status.valueOf(dto.getStatus()), entity.getStatus());
+        assertEquals(dto.getRefuseReason(), entity.getRefuseReason());
         // Room will be created with the provided ID
         assertNotNull(entity.getRoom());
         assertEquals(dto.getRoomId(), entity.getRoom().getId());

@@ -24,7 +24,10 @@ public class Booking {
     @Lob
     private String specialRequests;
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private Status status = Status.CREATED;
+
+    @Lob
+    private String refuseReason;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "updated_by", foreignKey = @ForeignKey(name = "fk_booking_updated_by"))
@@ -33,6 +36,6 @@ public class Booking {
     private LocalDateTime lastUpdatedDate;
 
     public enum Status {
-        CREATED, CONFIRMED, CANCELLED, COMPLETED
+        CREATED, RESERVED, CONFIRMED, REFUSED, CANCELLED, COMPLETED
     }
 }

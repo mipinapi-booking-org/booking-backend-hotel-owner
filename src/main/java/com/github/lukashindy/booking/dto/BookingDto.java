@@ -14,6 +14,7 @@ public class BookingDto {
     private String guestFullNames;
     private String specialRequests;
     private String status;
+    private String refuseReason;
     private UUID updatedBy;
     private LocalDateTime lastUpdatedDate;
 }

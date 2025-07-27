@@ -6,41 +6,30 @@
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
     <changeSet id="2" author="booking-system">
-        <comment>Update booking table: add updatedBy and lastUpdatedDate fields, change checkInDate and checkOutDate to TIMESTAMP</comment>
+        <comment>Change hotel_owner.id from BIGINT to UUID and update related foreign keys</comment>
         
-        <!-- Add updated_by column with foreign key to hotel_owner -->
-        <addColumn tableName="booking">
-            <column name="updated_by" type="UUID">
-                <constraints nullable="true"/>
-            </column>
-        </addColumn>
+        <!-- Drop existing foreign key constraints first -->
+        <dropForeignKeyConstraint baseTableName="hotel" constraintName="fk_hotel_owner"/>
         
-        <!-- Add foreign key constraint for updated_by -->
+        <!-- Change hotel_owner.id to UUID -->
+        <modifyDataType 
+            tableName="hotel_owner" 
+            columnName="id" 
+            newDataType="UUID"/>
+        
+        <!-- Change hotel.owner_id to UUID -->
+        <modifyDataType 
+            tableName="hotel" 
+            columnName="owner_id" 
+            newDataType="UUID"/>
+        
+        <!-- Recreate foreign key constraints -->
         <addForeignKeyConstraint 
-            baseTableName="booking" 
-            baseColumnNames="updated_by"
-            constraintName="fk_booking_updated_by"
+            baseTableName="hotel" 
+            baseColumnNames="owner_id"
+            constraintName="fk_hotel_owner"
             referencedTableName="hotel_owner"
             referencedColumnNames="id"/>
-        
-        <!-- Add last_updated_date column -->
-        <addColumn tableName="booking">
-            <column name="last_updated_date" type="TIMESTAMP">
-                <constraints nullable="true"/>
-            </column>
-        </addColumn>
-        
-        <!-- Modify checkInDate column type from DATE to TIMESTAMP -->
-        <modifyDataType 
-            tableName="booking" 
-            columnName="check_in_date" 
-            newDataType="TIMESTAMP"/>
-        
-        <!-- Modify checkOutDate column type from DATE to TIMESTAMP -->
-        <modifyDataType 
-            tableName="booking" 
-            columnName="check_out_date" 
-            newDataType="TIMESTAMP"/>
     </changeSet>
 
 </databaseChangeLog>
