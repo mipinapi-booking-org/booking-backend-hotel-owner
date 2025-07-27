@@ -20,5 +20,6 @@ public interface HotelOwnerMapper {
     @Mapping(source = "email", target = "email")
     @Mapping(source = "passwordHash", target = "passwordHash")
     @Mapping(source = "role", target = "role")
+    @Mapping(target = "hotelAccesses", ignore = true) // Управляется отдельно
     HotelOwner toEntity(HotelOwnerDto dto);
 }

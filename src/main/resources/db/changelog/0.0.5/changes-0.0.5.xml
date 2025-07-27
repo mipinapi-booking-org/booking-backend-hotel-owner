@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="add-hotel-owner-access-table" author="developer">
+        <!-- Создание таблицы hotel_owner_access для связи многие-ко-многим -->
+        <createTable tableName="hotel_owner_access">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="hotel_owner_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="hotel_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="granted_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="granted_by" type="UUID">
+                <constraints nullable="true"/>
+            </column>
+            <column name="access_level" type="VARCHAR(20)" defaultValue="MANAGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Добавление уникального индекса для предотвращения дублирования -->
+        <addUniqueConstraint 
+            tableName="hotel_owner_access" 
+            columnNames="hotel_owner_id, hotel_id"
+            constraintName="uk_hotel_owner_access"/>
+
+        <!-- Добавление внешних ключей -->
+        <addForeignKeyConstraint
+            baseTableName="hotel_owner_access"
+            baseColumnNames="hotel_owner_id"
+            referencedTableName="hotel_owner"
+            referencedColumnNames="id"
+            constraintName="fk_hotel_owner_access_owner"/>
+
+        <addForeignKeyConstraint
+            baseTableName="hotel_owner_access"
+            baseColumnNames="hotel_id"
+            referencedTableName="hotel"
+            referencedColumnNames="id"
+            constraintName="fk_hotel_owner_access_hotel"/>
+
+        <!-- Удаление старого внешнего ключа от hotel к hotel_owner -->
+        <dropForeignKeyConstraint
+            baseTableName="hotel"
+            constraintName="fk_hotel_owner"/>
+
+        <!-- Удаление старой колонки owner_id из hotel -->
+        <dropColumn tableName="hotel" columnName="owner_id"/>
+    </changeSet>
+</databaseChangeLog>

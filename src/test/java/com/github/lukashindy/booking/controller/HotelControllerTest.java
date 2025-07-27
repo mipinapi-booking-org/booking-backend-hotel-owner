@@ -62,7 +62,8 @@ class HotelControllerTest {
         testHotel.setCountry("Maldives");
         testHotel.setCity("Male");
         testHotel.setStreet("Paradise Island Resort");
-        testHotel.setOwner(testOwner);
+        // Owner теперь связан через HotelOwnerAccess, а не напрямую
+        // testHotel.setOwner(testOwner);
         
         // Создаем тестовый DTO
         testHotelDto = new HotelDto();

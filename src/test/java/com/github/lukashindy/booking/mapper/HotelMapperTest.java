@@ -32,7 +32,6 @@ class HotelMapperTest {
         hotel.setCountry("USA");
         hotel.setCity("New York");
         hotel.setStreet("Broadway 123");
-        hotel.setOwner(owner);
 
         // When
         HotelDto dto = mapper.toDto(hotel);
@@ -44,7 +43,8 @@ class HotelMapperTest {
         assertEquals(hotel.getCountry(), dto.getCountry());
         assertEquals(hotel.getCity(), dto.getCity());
         assertEquals(hotel.getStreet(), dto.getStreet());
-        assertEquals(hotel.getOwner().getId(), dto.getOwnerId());
+        // Owner теперь не является частью Hotel - используется HotelOwnerAccess
+        assertNull(dto.getOwnerId());
         
         logger.info("Completed testToDto test successfully");
     }
@@ -72,41 +72,9 @@ class HotelMapperTest {
         assertEquals(dto.getCountry(), hotel.getCountry());
         assertEquals(dto.getCity(), hotel.getCity());
         assertEquals(dto.getStreet(), hotel.getStreet());
-        assertEquals(dto.getOwnerId(), hotel.getOwner().getId());
+        // Owner теперь не является частью Hotel - используется HotelOwnerAccess
+        // assertEquals(dto.getOwnerId(), hotel.getOwner().getId());
         
         logger.info("Completed testToEntity test successfully");
-    }
-
-    @Test
-    void testMapOwnerId() {
-        logger.info("Starting testMapOwnerId test");
-        
-        // Given
-        UUID ownerId = UUID.randomUUID();
-
-        // When
-        HotelOwner owner = mapper.mapOwner(ownerId);
-
-        // Then
-        assertNotNull(owner);
-        assertEquals(ownerId, owner.getId());
-        
-        logger.info("Completed testMapOwnerId test successfully");
-    }
-
-    @Test
-    void testMapOwnerIdNull() {
-        logger.info("Starting testMapOwnerIdNull test");
-        
-        // Given
-        UUID ownerId = null;
-
-        // When
-        HotelOwner owner = mapper.mapOwner(ownerId);
-
-        // Then
-        assertNull(owner);
-        
-        logger.info("Completed testMapOwnerIdNull test successfully");
     }
 }

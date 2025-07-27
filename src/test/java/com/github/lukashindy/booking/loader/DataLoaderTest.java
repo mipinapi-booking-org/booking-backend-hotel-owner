@@ -2,9 +2,11 @@ package com.github.lukashindy.booking.loader;
 
 import com.github.lukashindy.booking.model.Hotel;
 import com.github.lukashindy.booking.model.HotelOwner;
+import com.github.lukashindy.booking.model.HotelOwnerAccess;
 import com.github.lukashindy.booking.model.Room;
 import com.github.lukashindy.booking.model.RoomType;
 import com.github.lukashindy.booking.repository.HotelOwnerRepository;
+import com.github.lukashindy.booking.repository.HotelOwnerAccessRepository;
 import com.github.lukashindy.booking.repository.HotelRepository;
 import com.github.lukashindy.booking.repository.RoomRepository;
 import com.github.lukashindy.booking.repository.RoomTypeRepository;
@@ -42,6 +44,9 @@ class DataLoaderTest {
     @Mock
     private RoomRepository roomRepository;
     
+    @Mock
+    private HotelOwnerAccessRepository hotelOwnerAccessRepository;
+    
     @InjectMocks
     private DataLoader dataLoader;
     
@@ -66,7 +71,8 @@ class DataLoaderTest {
         mockHotel.setName("Grand Paradise Hotel");
         mockHotel.setCountry("Maldives");
         mockHotel.setCity("Male");
-        mockHotel.setOwner(mockHotelOwner);
+        // Owner теперь связан через HotelOwnerAccess, а не напрямую
+        // mockHotel.setOwner(mockHotelOwner);
         
         mockRoomType = new RoomType();
         mockRoomType.setId(1L);
@@ -83,15 +89,20 @@ class DataLoaderTest {
         logger.info("Test data setup completed");
     }
     
+    private void setupMocks() {
+        when(hotelOwnerRepository.save(any(HotelOwner.class))).thenReturn(mockHotelOwner);
+        when(hotelRepository.save(any(Hotel.class))).thenReturn(mockHotel);
+        when(roomTypeRepository.save(any(RoomType.class))).thenReturn(mockRoomType);
+        when(roomRepository.save(any(Room.class))).thenReturn(mockRoom);
+        when(hotelOwnerAccessRepository.save(any())).thenReturn(new HotelOwnerAccess());
+    }
+    
     @Test
     void run_ShouldCreateCompleteDataStructure() throws Exception {
         logger.info("Testing DataLoader run method");
         
         // Given
-        when(hotelOwnerRepository.save(any(HotelOwner.class))).thenReturn(mockHotelOwner);
-        when(hotelRepository.save(any(Hotel.class))).thenReturn(mockHotel);
-        when(roomTypeRepository.save(any(RoomType.class))).thenReturn(mockRoomType);
-        when(roomRepository.save(any(Room.class))).thenReturn(mockRoom);
+        setupMocks();
         
         // When
         dataLoader.run();
@@ -118,10 +129,7 @@ class DataLoaderTest {
         logger.info("Testing hotel owner creation with correct data");
         
         // Given
-        when(hotelOwnerRepository.save(any(HotelOwner.class))).thenReturn(mockHotelOwner);
-        when(hotelRepository.save(any(Hotel.class))).thenReturn(mockHotel);
-        when(roomTypeRepository.save(any(RoomType.class))).thenReturn(mockRoomType);
-        when(roomRepository.save(any(Room.class))).thenReturn(mockRoom);
+        setupMocks();
         
         // When
         dataLoader.run();
@@ -144,10 +152,7 @@ class DataLoaderTest {
         logger.info("Testing hotel creation with correct data");
         
         // Given
-        when(hotelOwnerRepository.save(any(HotelOwner.class))).thenReturn(mockHotelOwner);
-        when(hotelRepository.save(any(Hotel.class))).thenReturn(mockHotel);
-        when(roomTypeRepository.save(any(RoomType.class))).thenReturn(mockRoomType);
-        when(roomRepository.save(any(Room.class))).thenReturn(mockRoom);
+        setupMocks();
         
         // When
         dataLoader.run();
@@ -161,7 +166,8 @@ class DataLoaderTest {
         assertEquals("Maldives", savedHotel.getCountry());
         assertEquals("Male", savedHotel.getCity());
         assertEquals("Paradise Island Resort, North Male Atoll", savedHotel.getStreet());
-        assertNotNull(savedHotel.getOwner());
+        // Owner теперь связан через HotelOwnerAccess, а не напрямую
+        // assertNotNull(savedHotel.getOwner());
         
         logger.info("Hotel creation test completed successfully");
     }
@@ -171,10 +177,7 @@ class DataLoaderTest {
         logger.info("Testing room types creation with correct names");
         
         // Given
-        when(hotelOwnerRepository.save(any(HotelOwner.class))).thenReturn(mockHotelOwner);
-        when(hotelRepository.save(any(Hotel.class))).thenReturn(mockHotel);
-        when(roomTypeRepository.save(any(RoomType.class))).thenReturn(mockRoomType);
-        when(roomRepository.save(any(Room.class))).thenReturn(mockRoom);
+        setupMocks();
         
         // When
         dataLoader.run();
@@ -202,10 +205,7 @@ class DataLoaderTest {
         logger.info("Testing rooms creation with correct naming pattern");
         
         // Given
-        when(hotelOwnerRepository.save(any(HotelOwner.class))).thenReturn(mockHotelOwner);
-        when(hotelRepository.save(any(Hotel.class))).thenReturn(mockHotel);
-        when(roomTypeRepository.save(any(RoomType.class))).thenReturn(mockRoomType);
-        when(roomRepository.save(any(Room.class))).thenReturn(mockRoom);
+        setupMocks();
         
         // When
         dataLoader.run();

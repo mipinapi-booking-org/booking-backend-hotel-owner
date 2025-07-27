@@ -7,6 +7,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 @Component
 public class DataLoader implements CommandLineRunner {
@@ -25,7 +30,14 @@ public class DataLoader implements CommandLineRunner {
     @Autowired
     private RoomRepository roomRepository;
     
+    @Autowired
+    private BookingRepository bookingRepository;
+    
+    @Autowired
+    private HotelOwnerAccessRepository hotelOwnerAccessRepository;
+    
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
         logger.info("Starting data loading...");
         
@@ -33,10 +45,16 @@ public class DataLoader implements CommandLineRunner {
         HotelOwner admin = createHotelOwner();
         
         // Создаем отель
-        Hotel hotel = createHotel(admin);
+        Hotel hotel = createHotel();
+        
+        // Создаем связь доступа между админом и отелем
+        createHotelAccess(admin, hotel);
         
         // Создаем типы комнат
         createRoomTypes(hotel);
+        
+        // Создаем тестовые бронирования
+        createTestBookings(admin);
         
         logger.info("Data loading completed successfully!");
     }
@@ -56,7 +74,7 @@ public class DataLoader implements CommandLineRunner {
         return savedOwner;
     }
     
-    private Hotel createHotel(HotelOwner owner) {
+    private Hotel createHotel() {
         logger.info("Creating hotel...");
         
         Hotel hotel = new Hotel();
@@ -64,12 +82,25 @@ public class DataLoader implements CommandLineRunner {
         hotel.setCountry("Maldives");
         hotel.setCity("Male");
         hotel.setStreet("Paradise Island Resort, North Male Atoll");
-        hotel.setOwner(owner);
         
         Hotel savedHotel = hotelRepository.save(hotel);
         logger.info("Hotel created with ID: {}", savedHotel.getId());
         
         return savedHotel;
+    }
+    
+    private void createHotelAccess(HotelOwner owner, Hotel hotel) {
+        logger.info("Creating hotel access for owner {} to hotel {}", owner.getId(), hotel.getId());
+        
+        HotelOwnerAccess access = new HotelOwnerAccess();
+        access.setHotelOwner(owner);
+        access.setHotel(hotel);
+        access.setGrantedAt(LocalDateTime.now());
+        access.setGrantedBy(owner.getId()); // Владелец сам себе дает права
+        access.setAccessLevel(HotelOwnerAccess.AccessLevel.OWNER);
+        
+        hotelOwnerAccessRepository.save(access);
+        logger.info("Hotel access created successfully");
     }
     
     private void createRoomTypes(Hotel hotel) {
@@ -154,5 +185,101 @@ public class DataLoader implements CommandLineRunner {
         }
         
         return String.format("%s-%03d", prefix, roomIndex);
+    }
+    
+    private void createTestBookings(HotelOwner admin) {
+        logger.info("Creating test bookings...");
+        
+        // Получаем список всех комнат для создания бронирований
+        List<Room> allRooms = roomRepository.findAll();
+        
+        if (allRooms.isEmpty()) {
+            logger.warn("No rooms found for creating bookings");
+            return;
+        }
+        
+        // Создаем тестовые бронирования с непересекающимися датами
+        LocalDateTime baseDate = LocalDateTime.now().plusDays(1).withHour(14).withMinute(0).withSecond(0).withNano(0);
+        
+        // Данные для тестовых бронирований
+        String[][] bookingData = {
+            {"Иван Петров", "Алексей Сидоров", "Требуется детская кроватка"},
+            {"Maria Garcia", "John Smith", "Безглютеновое питание"},
+            {"Анна Козлова", "Михаил Иванов", "Поздний заезд после 22:00"},
+            {"Pierre Dubois", "Marie Laurent", "Номер на высоком этаже"},
+            {"李明", "王丽", "Халяльное питание"},
+            {"Ahmed Hassan", "", "Тихий номер"},
+            {"Elena Rossi", "Giuseppe Bianchi", "Романтический ужин"},
+            {"Hans Mueller", "", "Трансфер из аэропорта"}
+        };
+        
+        int bookingIndex = 0;
+        for (int roomIndex = 0; roomIndex < Math.min(allRooms.size(), 15) && bookingIndex < bookingData.length; roomIndex++) {
+            Room room = allRooms.get(roomIndex);
+            
+            // Создаем несколько бронирований для одной комнаты с разными периодами
+            int bookingsPerRoom = (roomIndex % 3) + 1; // От 1 до 3 бронирований на комнату
+            
+            LocalDateTime roomBookingStart = baseDate.plusDays(roomIndex * 7L); // Каждая комната начинает с недельным сдвигом
+            
+            for (int i = 0; i < bookingsPerRoom && bookingIndex < bookingData.length; i++) {
+                String[] guestData = bookingData[bookingIndex];
+                
+                // Вычисляем даты для каждого бронирования в комнате (непересекающиеся)
+                LocalDateTime checkIn = roomBookingStart.plusDays(i * 4L); // 4 дня между бронированиями
+                LocalDateTime checkOut = checkIn.plusDays(2 + (i % 2)); // 2-3 дня проживания
+                
+                // Создаем бронирование
+                Booking booking = new Booking();
+                booking.setRoom(room);
+                booking.setClientId(UUID.randomUUID());
+                booking.setCheckInDate(checkIn);
+                booking.setCheckOutDate(checkOut);
+                booking.setGuestFullNames(guestData[0] + (!guestData[1].isEmpty() ? ", " + guestData[1] : ""));
+                booking.setSpecialRequests(guestData.length > 2 ? guestData[2] : null);
+                booking.setStatus(getRandomInitialStatus(bookingIndex));
+                
+                // Для некоторых бронирований добавляем информацию об обновлении
+                if (booking.getStatus() != Booking.Status.CREATED) {
+                    booking.setUpdatedBy(admin);
+                    booking.setLastUpdatedDate(checkIn.minusDays(3 + (bookingIndex % 5)));
+                    
+                    // Добавляем причину отказа для отклоненных бронирований
+                    if (booking.getStatus() == Booking.Status.REFUSED) {
+                        String[] refuseReasons = {
+                            "Номер временно недоступен для бронирования",
+                            "Превышена максимальная вместимость номера",
+                            "Запрошенные даты пересекаются с техническими работами",
+                            "Специальные требования не могут быть выполнены"
+                        };
+                        booking.setRefuseReason(refuseReasons[bookingIndex % refuseReasons.length]);
+                    }
+                }
+                
+                bookingRepository.save(booking);
+                
+                logger.debug("Created booking for room {} from {} to {}, status: {}", 
+                    room.getRoomNumber(), 
+                    checkIn.toLocalDate(), checkOut.toLocalDate(), booking.getStatus());
+                
+                bookingIndex++;
+            }
+        }
+        
+        logger.info("Created {} test bookings with non-overlapping dates", bookingIndex);
+    }
+    
+    private Booking.Status getRandomInitialStatus(int index) {
+        // Распределяем статусы для разнообразия тестовых данных
+        Booking.Status[] statuses = {
+            Booking.Status.CREATED,     // 40%
+            Booking.Status.CREATED,
+            Booking.Status.CONFIRMED,   // 25%
+            Booking.Status.REFUSED,     // 20%
+            Booking.Status.COMPLETED,   // 10%
+            Booking.Status.CANCELLED    // 5%
+        };
+        
+        return statuses[index % statuses.length];
     }
 }
