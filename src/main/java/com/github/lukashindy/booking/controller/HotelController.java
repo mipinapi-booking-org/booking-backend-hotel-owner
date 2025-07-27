@@ -1,6 +1,7 @@
 package com.github.lukashindy.booking.controller;
 
 import com.github.lukashindy.booking.dto.HotelDto;
+import com.github.lukashindy.booking.exception.ResourceNotFoundException;
 import com.github.lukashindy.booking.mapper.HotelMapper;
 import com.github.lukashindy.booking.model.Hotel;
 import com.github.lukashindy.booking.repository.HotelRepository;
@@ -42,15 +43,11 @@ public class HotelController {
     public ResponseEntity<HotelDto> getHotelById(@PathVariable Long id) {
         logger.info("Getting hotel with ID: {}", id);
         
-        return hotelRepository.findById(id)
-                .map(hotel -> {
-                    HotelDto hotelDto = hotelMapper.toDto(hotel);
-                    logger.info("Found hotel: {}", hotelDto.getName());
-                    return ResponseEntity.ok(hotelDto);
-                })
-                .orElseGet(() -> {
-                    logger.warn("Hotel with ID {} not found", id);
-                    return ResponseEntity.notFound().build();
-                });
+        Hotel hotel = hotelRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Hotel", "id", id));
+        
+        HotelDto hotelDto = hotelMapper.toDto(hotel);
+        logger.info("Found hotel: {}", hotelDto.getName());
+        return ResponseEntity.ok(hotelDto);
     }
 }

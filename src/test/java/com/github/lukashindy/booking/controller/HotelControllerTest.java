@@ -1,6 +1,7 @@
 package com.github.lukashindy.booking.controller;
 
 import com.github.lukashindy.booking.dto.HotelDto;
+import com.github.lukashindy.booking.exception.ResourceNotFoundException;
 import com.github.lukashindy.booking.mapper.HotelMapper;
 import com.github.lukashindy.booking.model.Hotel;
 import com.github.lukashindy.booking.model.HotelOwner;
@@ -161,17 +162,6 @@ class HotelControllerTest {
         Long hotelId = 999L;
         when(hotelRepository.findById(hotelId)).thenReturn(Optional.empty());
         
-        // When
-        ResponseEntity<HotelDto> response = hotelController.getHotelById(hotelId);
-        
-        // Then
-        assertNotNull(response);
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNull(response.getBody());
-        
-        verify(hotelRepository, times(1)).findById(hotelId);
-        verify(hotelMapper, never()).toDto(any(Hotel.class));
-        
-        logger.info("getHotelById non-existing hotel test completed successfully");
+        assertThrows(ResourceNotFoundException.class, () -> hotelController.getHotelById(hotelId));
     }
 }

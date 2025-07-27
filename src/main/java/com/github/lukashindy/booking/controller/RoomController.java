@@ -2,6 +2,7 @@ package com.github.lukashindy.booking.controller;
 
 import com.github.lukashindy.booking.dto.RoomDto;
 import com.github.lukashindy.booking.dto.RoomWithDetailsDto;
+import com.github.lukashindy.booking.exception.ResourceNotFoundException;
 import com.github.lukashindy.booking.mapper.RoomMapper;
 import com.github.lukashindy.booking.model.Room;
 import com.github.lukashindy.booking.repository.RoomRepository;
@@ -56,16 +57,12 @@ public class RoomController {
     public ResponseEntity<RoomWithDetailsDto> getRoomById(@PathVariable Long id) {
         logger.info("Getting room with ID: {}", id);
         
-        return roomRepository.findById(id)
-                .map(room -> {
-                    RoomWithDetailsDto roomDto = roomMapper.toDetailedDto(room);
-                    logger.info("Found room: {}", roomDto.getRoomNumber());
-                    return ResponseEntity.ok(roomDto);
-                })
-                .orElseGet(() -> {
-                    logger.warn("Room with ID {} not found", id);
-                    return ResponseEntity.notFound().build();
-                });
+        Room room = roomRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Room", "id", id));
+        
+        RoomWithDetailsDto roomDto = roomMapper.toDetailedDto(room);
+        logger.info("Found room: {}", roomDto.getRoomNumber());
+        return ResponseEntity.ok(roomDto);
     }
     
     @GetMapping

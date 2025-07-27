@@ -2,6 +2,7 @@ package com.github.lukashindy.booking.controller;
 
 import com.github.lukashindy.booking.dto.RoomDto;
 import com.github.lukashindy.booking.dto.RoomWithDetailsDto;
+import com.github.lukashindy.booking.exception.ResourceNotFoundException;
 import com.github.lukashindy.booking.mapper.RoomMapper;
 import com.github.lukashindy.booking.model.Hotel;
 import com.github.lukashindy.booking.model.Room;
@@ -216,18 +217,7 @@ class RoomControllerTest {
         Long roomId = 999L;
         when(roomRepository.findById(roomId)).thenReturn(Optional.empty());
         
-        // When
-        ResponseEntity<RoomWithDetailsDto> response = roomController.getRoomById(roomId);
-        
-        // Then
-        assertNotNull(response);
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNull(response.getBody());
-        
-        verify(roomRepository, times(1)).findById(roomId);
-        verify(roomMapper, never()).toDetailedDto(any(Room.class));
-        
-        logger.info("getRoomById non-existing room test completed successfully");
+        assertThrows(ResourceNotFoundException.class, () -> roomController.getRoomById(roomId));
     }
     
     @Test

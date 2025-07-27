@@ -1,6 +1,7 @@
 package com.github.lukashindy.booking.controller;
 
 import com.github.lukashindy.booking.dto.RoomTypeDto;
+import com.github.lukashindy.booking.exception.ResourceNotFoundException;
 import com.github.lukashindy.booking.mapper.RoomTypeMapper;
 import com.github.lukashindy.booking.model.RoomType;
 import com.github.lukashindy.booking.repository.RoomTypeRepository;
@@ -42,16 +43,12 @@ public class RoomTypeController {
     public ResponseEntity<RoomTypeDto> getRoomTypeById(@PathVariable Long id) {
         logger.info("Getting room type with ID: {}", id);
         
-        return roomTypeRepository.findById(id)
-                .map(roomType -> {
-                    RoomTypeDto roomTypeDto = roomTypeMapper.toDto(roomType);
-                    logger.info("Found room type: {}", roomTypeDto.getName());
-                    return ResponseEntity.ok(roomTypeDto);
-                })
-                .orElseGet(() -> {
-                    logger.warn("Room type with ID {} not found", id);
-                    return ResponseEntity.notFound().build();
-                });
+        RoomType roomType = roomTypeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("RoomType", "id", id));
+        
+        RoomTypeDto roomTypeDto = roomTypeMapper.toDto(roomType);
+        logger.info("Found room type: {}", roomTypeDto.getName());
+        return ResponseEntity.ok(roomTypeDto);
     }
     
     @GetMapping
