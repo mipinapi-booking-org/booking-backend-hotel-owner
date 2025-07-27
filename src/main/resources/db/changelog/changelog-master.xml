@@ -6,6 +6,6 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
 
     <!-- Сюда подключаются все версии миграций -->
-    <include file="db/changelog/0.0.1/changes-0.0.1.xml" relativeToChangelogFile="true"/>
+    <include file="0.0.1/changes-0.0.1.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
