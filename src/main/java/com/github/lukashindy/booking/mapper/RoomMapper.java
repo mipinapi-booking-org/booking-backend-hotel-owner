@@ -1,6 +1,7 @@
 package com.github.lukashindy.booking.mapper;
 
 import com.github.lukashindy.booking.dto.RoomDto;
+import com.github.lukashindy.booking.dto.RoomWithDetailsDto;
 import com.github.lukashindy.booking.model.Room;
 import com.github.lukashindy.booking.model.RoomType;
 import com.github.lukashindy.booking.model.Hotel;
@@ -14,6 +15,17 @@ public interface RoomMapper {
     @Mapping(source = "roomType.id", target = "roomTypeId")
     @Mapping(source = "hotel.id", target = "hotelId")
     RoomDto toDto(Room entity);
+    
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "roomNumber", target = "roomNumber")
+    @Mapping(source = "roomType.id", target = "roomTypeId")
+    @Mapping(source = "roomType.name", target = "roomTypeName")
+    @Mapping(source = "roomType.capacity", target = "roomTypeCapacity")
+    @Mapping(source = "hotel.id", target = "hotelId")
+    @Mapping(source = "hotel.name", target = "hotelName")
+    @Mapping(source = "hotel.city", target = "hotelCity")
+    @Mapping(source = "hotel.country", target = "hotelCountry")
+    RoomWithDetailsDto toDetailedDto(Room entity);
     
     @Mapping(source = "id", target = "id")
     @Mapping(source = "roomNumber", target = "roomNumber")
