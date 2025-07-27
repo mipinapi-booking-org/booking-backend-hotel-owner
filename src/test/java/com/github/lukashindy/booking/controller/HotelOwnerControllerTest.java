@@ -17,14 +17,14 @@ class HotelOwnerControllerTest {
 
     @Test
     void hello_ShouldReturnGreeting() throws Exception {
-        mockMvc.perform(get("/api/hotel-owner/hello"))
+        mockMvc.perform(get("/api/v1/hotel-owner/hello"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Hello from Hotel Owner Booking Backend!"));
     }
 
     @Test
     void status_ShouldReturnStatus() throws Exception {
-        mockMvc.perform(get("/api/hotel-owner/status"))
+        mockMvc.perform(get("/api/v1/hotel-owner/status"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Service is running successfully!"));
     }

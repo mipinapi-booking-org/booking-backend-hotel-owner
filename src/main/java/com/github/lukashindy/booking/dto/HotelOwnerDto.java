@@ -1,14 +1,9 @@
-package com.github.lukashindy.booking.model;
+package com.github.lukashindy.booking.dto;
 
-import jakarta.persistence.*;
 import lombok.Data;
 
-@Entity
-public class HotelOwner {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class HotelOwnerDto {
     private Long id;
-
     private String name;
     private String email;
     private String passwordHash;
